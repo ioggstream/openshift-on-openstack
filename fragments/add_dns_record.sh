@@ -13,9 +13,9 @@ if [ -z "$DNS_UPDATE_KEY" ]; then
 fi
 
 if yum info python-dns; then
-    retry yum -y install python-dns
+    /usr/local/bin/retry yum -y install python-dns
 else
-    retry yum -y install python2-dns
+    /usr/local/bin/retry yum -y install python2-dns
 fi
 
 

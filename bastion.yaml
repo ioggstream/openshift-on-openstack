@@ -303,6 +303,9 @@ resources:
         - path: /etc/pki/ca-trust/source/anchors/ca.crt
           permissions: 0600
           content: {get_param: ca_cert}
+        - path: /usr/local/bin/update_dns
+          permissions: 0755
+          content: {get_file: fragments/update_dns.py}
         ssh_authorized_keys:
         - {get_param: ansible_public_key}
 

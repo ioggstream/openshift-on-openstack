@@ -203,6 +203,40 @@ resources:
       port_id: {get_attr: [lb_pool, vip, port_id]}
       floatingip_id: {get_param: floatingip_id}
 
+  add_dns_record:
+    type: OS::Heat::SoftwareConfig
+     properties:
+      group: script
+      config:
+        str_replace:
+          params:
+            '%ZONE%': {get_param: domain_name}
+            '%DNS_ENTRY%':
+              str_replace:
+                template: '%stack_name%-%hostname%.%domainname%'
+                params:
+                  '%stack_name%': {get_param: stack_name}
+                  '%hostname%': {get_param: hostname}
+                  '%domainname%': {get_param: domain_name}
+            '%DNS_SERVER%': {get_param: [dns_servers, 0]}
+            '%DNS_UPDATE_KEY%': {get_param: dns_update_key}
+            '%IP_ADDRESS%': {get_param: floatingip}
+          template: {get_file: fragments/add_dns_record.sh}
+
+  add_wildcard_record:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          params:
+            '%DNS_ENTRY%': {list_join: ["", ["*.", {get_param: app_subdomain}]]}
+            '%ZONE%': {get_param: domain_name}
+            '%DNS_SERVER%': {get_param: [dns_servers, 0]}
+            '%DNS_UPDATE_KEY%': {get_param: dns_update_key}
+            '%IP_ADDRESS%': {get_param: floatingip}
+          template: {get_file: fragments/add_dns_record.sh}
+
 outputs:
   console_url:
     description: URL of the OpenShift web console
